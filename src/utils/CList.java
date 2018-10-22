@@ -2,10 +2,7 @@ package utils;
 
 import classes.Project;
 import java.awt.Component;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -17,9 +14,10 @@ import javax.swing.border.EmptyBorder;
  * @author Ariyanas
  */
 public class CList extends JLabel implements ListCellRenderer<Project> {
-
+    ImageUtils iu = new ImageUtils();
+    
     public CList() {
-        setOpaque(true);
+        this.setOpaque(true);
     }
 
     @Override
@@ -33,7 +31,7 @@ public class CList extends JLabel implements ListCellRenderer<Project> {
 
         ImageIcon imageIcon = new ImageIcon(getClass().getResource("/images/" + icon + ".png"));
         Image img = imageIcon.getImage();
-        imageIcon.setImage(getScaledImage(img, 16, 16));
+        imageIcon.setImage(iu.getScaledImage(img, 16, 16));
 
         setIcon(imageIcon);
         setText(project.toString());
@@ -49,16 +47,4 @@ public class CList extends JLabel implements ListCellRenderer<Project> {
 
         return this;
     }
-
-    Image getScaledImage(Image Img, int wt, int ht) {
-        BufferedImage resizedImg = new BufferedImage(wt, ht, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = resizedImg.createGraphics();
-
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2.drawImage(Img, 0, 0, wt, ht, null);
-        g2.dispose();
-
-        return resizedImg;
-    }
-
 }

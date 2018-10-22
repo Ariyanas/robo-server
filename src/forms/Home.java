@@ -3,13 +3,18 @@ package forms;
 import classes.Project;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.extended.filechooser.WebDirectoryChooser;
-import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.utils.swing.DialogOptions;
 import java.io.File;
 import com.alee.laf.rootpane.WebFrame;
+import java.awt.Desktop;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import utils.CList;
 import utils.Msg;
+import utils.TypeUtils;
+import classes.Type;
 
 /**
  *
@@ -21,6 +26,8 @@ public class Home extends WebFrame {
     Msg msg = null;
     boolean flag = false;
     int index = 0;
+    
+    TypeUtils tu = new TypeUtils();
 
     public Home() {
         initComponents();
@@ -65,15 +72,27 @@ public class Home extends WebFrame {
         lblProjectName = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         txtPath = new javax.swing.JTextField();
-        jButton4 = new javax.swing.JButton();
+        btnOpen = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         txtHost = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         txtPort = new javax.swing.JTextField();
         lblStatus = new javax.swing.JLabel();
         btnStop = new javax.swing.JButton();
+        btnLogs = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         btnCancel = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        mnuExit = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        jMenu3 = new javax.swing.JMenu();
+        jRadioButtonMenuItem3 = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItem1 = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItem2 = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItem4 = new javax.swing.JRadioButtonMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -81,6 +100,11 @@ public class Home extends WebFrame {
         jLabel1.setText("Project Type");
 
         txtProjectType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Laravel", "Angular", "React", "Spring Boot", "Spring", "Django", "Code Igniter" }));
+        txtProjectType.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                txtProjectTypeItemStateChanged(evt);
+            }
+        });
 
         jLabel2.setLabelFor(txtProjectPath);
         jLabel2.setText("Project Path");
@@ -135,6 +159,11 @@ public class Home extends WebFrame {
         lblProjectType.setText("Project Type");
 
         btnStart.setText("Start");
+        btnStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStartActionPerformed(evt);
+            }
+        });
 
         btnEdit.setText("Edit");
         btnEdit.addActionListener(new java.awt.event.ActionListener() {
@@ -152,7 +181,12 @@ public class Home extends WebFrame {
         txtPath.setEditable(false);
         txtPath.setEnabled(false);
 
-        jButton4.setText("Open");
+        btnOpen.setText("Open");
+        btnOpen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOpenActionPerformed(evt);
+            }
+        });
 
         jLabel8.setText("Host");
 
@@ -165,6 +199,13 @@ public class Home extends WebFrame {
         lblStatus.setText("Server Status");
 
         btnStop.setText("Stop");
+        btnStop.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStopActionPerformed(evt);
+            }
+        });
+
+        btnLogs.setText("Show Logs");
 
         javax.swing.GroupLayout pnlInfoLayout = new javax.swing.GroupLayout(pnlInfo);
         pnlInfo.setLayout(pnlInfoLayout);
@@ -175,38 +216,39 @@ public class Home extends WebFrame {
                 .addGroup(pnlInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlInfoLayout.createSequentialGroup()
                         .addGroup(pnlInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(pnlInfoLayout.createSequentialGroup()
-                                .addGroup(pnlInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel7)
-                                    .addGroup(pnlInfoLayout.createSequentialGroup()
-                                        .addGroup(pnlInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel8))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addGroup(pnlInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel9)
-                                            .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 131, Short.MAX_VALUE))
-                            .addGroup(pnlInfoLayout.createSequentialGroup()
-                                .addGroup(pnlInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(lblProjectType, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(pnlInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel5)
-                                    .addComponent(lblProjectName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(jLabel4)
+                            .addComponent(lblProjectType, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(pnlInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
+                            .addComponent(lblProjectName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap())
                     .addGroup(pnlInfoLayout.createSequentialGroup()
                         .addComponent(txtPath)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnOpen, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(pnlInfoLayout.createSequentialGroup()
                         .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlInfoLayout.createSequentialGroup()
+                        .addGroup(pnlInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7)
+                            .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(pnlInfoLayout.createSequentialGroup()
+                        .addGroup(pnlInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(pnlInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel9)
+                            .addGroup(pnlInfoLayout.createSequentialGroup()
+                                .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                                .addComponent(btnLogs))))))
         );
         pnlInfoLayout.setVerticalGroup(
             pnlInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -224,7 +266,7 @@ public class Home extends WebFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnlInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4))
+                    .addComponent(btnOpen))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnlInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
@@ -232,7 +274,8 @@ public class Home extends WebFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnlInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnLogs))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblStatus)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -254,6 +297,51 @@ public class Home extends WebFrame {
                 btnCancelActionPerformed(evt);
             }
         });
+
+        jMenu1.setText("File");
+
+        jMenuItem1.setText("jMenuItem1");
+        jMenu1.add(jMenuItem1);
+
+        jMenuItem2.setText("jMenuItem2");
+        jMenu1.add(jMenuItem2);
+
+        mnuExit.setText("Exit");
+        mnuExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuExitActionPerformed(evt);
+            }
+        });
+        jMenu1.add(mnuExit);
+
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Configure");
+
+        jMenu3.setText("Code Editor");
+
+        jRadioButtonMenuItem3.setSelected(true);
+        jRadioButtonMenuItem3.setText("VS Code");
+        jRadioButtonMenuItem3.setName("code_editor"); // NOI18N
+        jMenu3.add(jRadioButtonMenuItem3);
+
+        jRadioButtonMenuItem1.setText("Sublime Text");
+        jRadioButtonMenuItem1.setName("code_editor"); // NOI18N
+        jMenu3.add(jRadioButtonMenuItem1);
+
+        jRadioButtonMenuItem2.setText("Atom");
+        jRadioButtonMenuItem2.setName("code_editor"); // NOI18N
+        jMenu3.add(jRadioButtonMenuItem2);
+
+        jRadioButtonMenuItem4.setText("Notepad ++");
+        jRadioButtonMenuItem4.setName("code_editor"); // NOI18N
+        jMenu3.add(jRadioButtonMenuItem4);
+
+        jMenu2.add(jMenu3);
+
+        jMenuBar1.add(jMenu2);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -351,7 +439,11 @@ public class Home extends WebFrame {
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         final File dir = txtProjectPath.getSelectedPath();
 
-        //System.out.println(dir.getAbsolutePath());
+        if (dir == null) {
+            msg.showError("Please select a valid project directory !");
+            return;
+        }
+        
         if (!dir.isDirectory() || !dir.exists()) {
             msg.showError("Please select a valid project directory !");
             return;
@@ -436,6 +528,49 @@ public class Home extends WebFrame {
         setDefaults();
     }//GEN-LAST:event_btnCancelActionPerformed
 
+    private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
+        Project pro = listProjects.getSelectedValue();
+        pro.setStatus("running");
+        
+        btnEdit.setEnabled(false);
+        btnStart.setEnabled(false);
+        btnStop.setEnabled(true);
+    }//GEN-LAST:event_btnStartActionPerformed
+
+    private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
+        Project pro = listProjects.getSelectedValue();
+        pro.setStatus("stopped");
+        
+        btnEdit.setEnabled(true);
+        btnStart.setEnabled(true);
+        btnStop.setEnabled(false);
+    }//GEN-LAST:event_btnStopActionPerformed
+
+    private void btnOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenActionPerformed
+        Desktop desktop = Desktop.getDesktop();
+        File dir = null;
+        try {
+            dir = new File(txtPath.getText());
+            desktop.open(dir);
+        } catch (IllegalArgumentException iae) {
+            System.out.println("File Not Found");
+        } catch (IOException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnOpenActionPerformed
+
+    private void txtProjectTypeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_txtProjectTypeItemStateChanged
+        classes.Type t = tu.getType(txtProjectType.getSelectedItem().toString());
+        
+        if(t != null) {
+            txtProjectPort.setText(t.getPort());
+        }
+    }//GEN-LAST:event_txtProjectTypeItemStateChanged
+
+    private void mnuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuExitActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_mnuExitActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -458,7 +593,7 @@ public class Home extends WebFrame {
         txtProjectPort.setText("8000");
         
         btnStart.setEnabled(true);
-        btnStop.setEnabled(true);
+        //btnStop.setEnabled(true);
         listProjects.setEnabled(true);
         txtHost.setEnabled(true);
         txtPort.setEnabled(true);
@@ -472,9 +607,10 @@ public class Home extends WebFrame {
     private javax.swing.JButton btnBrowse;
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnLogs;
+    private javax.swing.JButton btnOpen;
     private javax.swing.JButton btnStart;
     private javax.swing.JButton btnStop;
-    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -486,11 +622,22 @@ public class Home extends WebFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem1;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem2;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem3;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem4;
     private javax.swing.JLabel lblProjectName;
     private javax.swing.JLabel lblProjectType;
     private javax.swing.JLabel lblStatus;
     private javax.swing.JList<Project> listProjects;
+    private javax.swing.JMenuItem mnuExit;
     private javax.swing.JPanel pnlInfo;
     private javax.swing.JScrollPane pnlList;
     private javax.swing.JTextField txtHost;
