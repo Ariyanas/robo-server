@@ -1,3 +1,2 @@
-build/*
-build/classes/
-*.jar
+/build/
+/*.jar
